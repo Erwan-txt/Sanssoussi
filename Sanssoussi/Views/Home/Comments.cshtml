@@ -1,0 +1,18 @@
+﻿@{
+    ViewData["Title"] = "Comments";
+}
+
+@model List<string>
+
+<h2>Commentaires</h2>
+
+@foreach (var comment in Model)
+{
+    <div>
+        @Html.Raw(comment)
+    </div>
+}
+
+<textarea rows="2" cols="20" id="NewComment" style="display:none;"></textarea>
+
+<input id="NewCommentsBtn" onclick="AddComments();" value="Nouveau commentaire" type="button" />
