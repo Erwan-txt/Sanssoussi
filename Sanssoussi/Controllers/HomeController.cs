@@ -13,6 +13,8 @@ using Microsoft.Extensions.Logging;
 using Sanssoussi.Areas.Identity.Data;
 using Sanssoussi.Models;
 
+using System.Text.RegularExpressions;
+
 namespace Sanssoussi.Controllers
 {
     public class HomeController : Controller
@@ -70,14 +72,27 @@ namespace Sanssoussi.Controllers
             {
                 throw new InvalidOperationException("Vous devez vous connecter");
             }
-
-            var cmd = new SqliteCommand(
+            //MODIF ajout de regex sur les commentaires pour whitelist
+            Regex regex = new Regex("^[a-zA-Z0-9.,!?;:()]*$");
+            if (regex.IsMatch(comment))
+            {
+                var cmd = new SqliteCommand(
                 $"insert into Comments (UserId, CommentId, Comment) Values ('{user.Id}','{Guid.NewGuid()}','" + comment + "')",
                 this._dbConnection);
-            this._dbConnection.Open();
-            await cmd.ExecuteNonQueryAsync();
+                this._dbConnection.Open();
+                await cmd.ExecuteNonQueryAsync();
 
-            return this.Ok("Commentaire ajouté");
+                return this.Ok("Commentaire ajouté");
+            }
+            else
+            {
+                throw new InvalidOperationException("Commentaire invalide");
+            }
+
+
+
+
+            
         }
 
         public async Task<IActionResult> Search(string searchData)
